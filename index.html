@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário da Diretoria Científica da LABIM</title>
+    <style>
+        :root {
+            --verde-escuro: #1b4332;
+            --verde-medio: #2d6a4f;
+            --verde-principal: #40916c;
+            --verde-claro: #74c69d;
+            --verde-suave: #d8f3dc;
+            --fundo-pagina: #f4f9f5;
+            --texto-escuro: #1c2a23;
+            --vermelho-alerta: #e63946;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--fundo-pagina);
+            color: var(--texto-escuro);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid var(--verde-claro);
+        }
+
+        header {
+            background-color: var(--verde-escuro);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--verde-claro);
+            font-size: 0.95rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background-color: var(--verde-suave);
+            border-bottom: 2px solid var(--verde-claro);
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--verde-escuro);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background-color: rgba(64, 145, 108, 0.15);
+        }
+
+        .tab-button.active {
+            background-color: var(--verde-principal);
+            color: white;
+        }
+
+        .tab-button.active svg {
+            fill: white;
+            stroke: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: var(--verde-suave);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .month-header h2 {
+            color: var(--verde-escuro);
+            font-size: 1.2rem;
+        }
+
+        .month-header button {
+            background-color: var(--verde-medio);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .month-header button:hover {
+            background-color: var(--verde-escuro);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-label {
+            font-weight: bold;
+            text-align: center;
+            color: var(--verde-medio);
+            padding: 8px 0;
+            font-size: 0.85rem;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            background-color: #f8fbf9;
+            border: 1px solid #e0efe4;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .day-cell:hover {
+            border-color: var(--verde-principal);
+            background-color: var(--verde-suave);
+        }
+
+        .day-cell.empty {
+            background-color: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .day-number {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--verde-escuro);
+        }
+
+        .has-activity {
+            background-color: #e8f7ed;
+            border-color: var(--verde-claro);
+        }
+
+        .activity-dots {
+            display: flex;
+            gap: 3px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--verde-principal);
+            border-radius: 50%;
+        }
+
+        .active-day {
+            border: 2px solid var(--verde-escuro) !important;
+            background-color: var(--verde-suave) !important;
+        }
+
+        .details-panel {
+            background-color: var(--fundo-pagina);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--verde-claro);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .details-panel h3 {
+            color: var(--verde-escuro);
+            border-bottom: 2px solid var(--verde-claro);
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .activity-list {
+            list-style: none;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--verde-principal);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .activity-title {
+            font-weight: bold;
+            color: var(--verde-escuro);
+            font-size: 0.9rem;
+            padding-right: 20px;
+        }
+
+        .activity-desc {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        .btn-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--vermelho-alerta);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-add-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--verde-claro);
+        }
+
+        .form-add-activity h4 {
+            font-size: 0.85rem;
+            color: var(--verde-escuro);
+        }
+
+        .form-add-activity input, .form-add-activity textarea {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .form-add-activity button {
+            background-color: var(--verde-principal);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .form-add-activity button:hover {
+            background-color: var(--verde-escuro);
+        }
+
+        .doc-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--verde-claro);
+        }
+
+        .doc-section h2 {
+            color: var(--verde-escuro);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--verde-suave);
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .doc-section p {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--verde-claro);
+            background-color: var(--fundo-pagina);
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area:hover {
+            background-color: var(--verde-suave);
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn-label {
+            background-color: var(--verde-principal);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn-label:hover {
+            background-color: var(--verde-escuro);
+        }
+
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .doc-card {
+            background: var(--fundo-pagina);
+            border: 1px solid var(--verde-claro);
+            border-radius: 8px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .doc-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .doc-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--verde-escuro);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .doc-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .materials-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--fundo-pagina);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--verde-claro);
+        }
+
+        @media (max-width: 600px) {
+            .materials-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .materials-form input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .materials-form button {
+            background-color: var(--verde-principal);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .materials-form button:hover {
+            background-color: var(--verde-escuro);
+        }
+
+        .materials-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .materials-table th, .materials-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0efe4;
+        }
+
+        .materials-table th {
+            background-color: var(--verde-suave);
+            color: var(--verde-escuro);
+            font-size: 0.9rem;
+        }
+
+        .materials-table td {
+            font-size: 0.9rem;
+        }
+
+        .materials-table tr:hover {
+            background-color: var(--fundo-pagina);
+        }
+
+        .no-docs {
+            color: #777;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .svg-icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--verde-escuro);
+        }
+
+        .svg-stroke {
+            width: 18px;
+            height: 18px;
+            stroke: var(--verde-escuro);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Painel de Controle e Atividades</h1>
+            <p>Diretoria Científica da LABIM</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-button active" onclick="abrirAba(event, 'aba-calendario')">
+                <svg class="svg-stroke"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Calendário
+            </button>
+            <button class="tab-button" onclick="abrirAba(event, 'aba-pop')">
+                <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                POP
+            </button>
+            <button class="tab-button" onclick="abrirAba(event, 'aba-pap')">
+                <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                PAP
+            </button>
+            <button class="tab-button" onclick="abrirAba(event, 'aba-materiais')">
+                <svg class="svg-stroke"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Lista de Materiais
+            </button>
+        </nav>
+
+        <div id="aba-calendario" class="tab-content active">
+            <div class="main-content">
+                <div class="calendar-section">
+                    <div class="month-header">
+                        <button onclick="mudarMes(-1)">
+                            <svg class="svg-stroke" style="stroke: white;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <h2 id="month-display">Setembro 2026</h2>
+                        <button onclick="mudarMes(1)">
+                            <svg class="svg-stroke" style="stroke: white;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="day-label">Dom</div>
+                        <div class="day-label">Seg</div>
+                        <div class="day-label">Ter</div>
+                        <div class="day-label">Qua</div>
+                        <div class="day-label">Qui</div>
+                        <div class="day-label">Sex</div>
+                        <div class="day-label">Sáb</div>
+                    </div>
+
+                    <div class="calendar-grid" id="calendar-days"></div>
+                </div>
+
+                <div class="details-panel">
+                    <h3 id="selected-date-title">Selecione um dia</h3>
+                    
+                    <div id="activity-details">
+                        <p class="no-activities">Clique em um dia no calendário para ver ou adicionar atividades.</p>
+                    </div>
+
+                    <form id="add-form" class="form-add-activity" style="display: none;" onsubmit="salvarAtividade(event)">
+                        <h4>+ Nova Atividade</h4>
+                        <input type="text" id="act-title" placeholder="Título da atividade" required>
+                        <textarea id="act-desc" rows="2" placeholder="Descrição / Horário"></textarea>
+                        <button type="submit">Adicionar ao Dia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="aba-pop" class="tab-content">
+            <div class="doc-section">
+                <h2>
+                    <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Procedimentos Operacionais Padrão (POP)
+                </h2>
+                <p>Adicione e consulte os documentos operacionais da LABIM (Arquivos suportados: .pdf e .docx).</p>
+                
+                <div class="upload-area">
+                    <svg class="svg-stroke" style="width: 32px; height: 32px; stroke: var(--verde-principal);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <p>Arraste ou clique abaixo para anexar novos arquivos POP</p>
+                    <label for="upload-pop" class="upload-btn-label">
+                        Escolher Arquivos (.pdf, .docx)
+                    </label>
+                    <input type="file" id="upload-pop" accept=".pdf, .docx, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple onchange="uploadDocumento('pop')">
+                </div>
+
+                <div class="doc-grid" id="pop-list"></div>
+            </div>
+        </div>
+
+        <div id="aba-pap" class="tab-content">
+            <div class="doc-section">
+                <h2>
+                    <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Procedimentos Administrativos Padrão (PAP)
+                </h2>
+                <p>Adicione e consulte os documentos administrativos da LABIM (Arquivos suportados: .pdf e .docx).</p>
+                
+                <div class="upload-area">
+                    <svg class="svg-stroke" style="width: 32px; height: 32px; stroke: var(--verde-principal);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <p>Arraste ou clique abaixo para anexar novos arquivos PAP</p>
+                    <label for="upload-pap" class="upload-btn-label">
+                        Escolher Arquivos (.pdf, .docx)
+                    </label>
+                    <input type="file" id="upload-pap" accept=".pdf, .docx, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple onchange="uploadDocumento('pap')">
+                </div>
+
+                <div class="doc-grid" id="pap-list"></div>
+            </div>
+        </div>
+
+        <div id="aba-materiais" class="tab-content">
+            <div class="doc-section">
+                <h2>
+                    <svg class="svg-stroke"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    Controle de Materiais e Insumos
+                </h2>
+                <p>Cadastre e gerencie a lista de materiais necessários com suas respectivas quantidades.</p>
+
+                <form class="materials-form" onsubmit="adicionarMaterial(event)">
+                    <input type="text" id="mat-nome" placeholder="Nome do material (ex: Tubo de Ensaio 15ml)" required>
+                    <input type="number" id="mat-qtd" placeholder="Quantidade" min="1" required>
+                    <button type="submit">
+                        <svg class="svg-stroke" style="stroke: white; width: 16px; height: 16px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Adicionar
+                    </button>
+                </form>
+
+                <table class="materials-table">
+                    <thead>
+                        <tr>
+                            <th>Item / Material</th>
+                            <th>Quantidade</th>
+                            <th style="width: 60px; text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="materials-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MÓDULOS DO FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Configuração capturada da sua tela do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAyPvasTqjqFYwtss_RmbTURWX39S9zYw",
+            authDomain: "akv-07.firebaseapp.com",
+            databaseURL: "https://akv-07-default-rtdb.firebaseio.com",
+            projectId: "akv-07",
+            storageBucket: "akv-07.firebasestorage.app",
+            messagingSenderId: "981680828058",
+            appId: "1:981680828058:web:ad7a80983225232f483923"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // VARIÁVEIS GLOBAIS
+        window.atividadesLABIM = {};
+        window.docsData = { pop: [], pap: [] };
+        window.materiaisData = [];
+        window.dataAtual = new Date(2026, 8, 1);
+        window.dataSelecionadaChave = null;
+
+        const meses = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+
+        // ESCUTADORES EM TEMPO REAL (FIREBASE)
+        onValue(ref(db, 'atividades'), (snapshot) => {
+            window.atividadesLABIM = snapshot.val() || {};
+            renderizarCalendario();
+            if (window.dataSelecionadaChave) {
+                atualizarListaAtividades(window.dataSelecionadaChave);
+            }
+        });
+
+        onValue(ref(db, 'documentos'), (snapshot) => {
+            window.docsData = snapshot.val() || { pop: [], pap: [] };
+            renderizarDocumentos('pop');
+            renderizarDocumentos('pap');
+        });
+
+        onValue(ref(db, 'materiais'), (snapshot) => {
+            window.materiaisData = snapshot.val() || [];
+            renderizarMateriais();
+        });
+
+        // NAVEGAÇÃO DE ABAS
+        window.abrirAba = function(evt, idAba) {
+            let i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            document.getElementById(idAba).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // CALENDÁRIO
+        window.renderizarCalendario = function() {
+            const ano = window.dataAtual.getFullYear();
+            const mes = window.dataAtual.getMonth();
+
+            document.getElementById('month-display').innerText = `${meses[mes]} ${ano}`;
+
+            const primeiroDia = new Date(ano, mes, 1).getDay();
+            const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < primeiroDia; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('day-cell', 'empty');
+                grid.appendChild(emptyCell);
+            }
+
+            for (let dia = 1; dia <= totalDias; dia++) {
+                const cell = document.createElement('div');
+                cell.classList.add('day-cell');
+
+                const dataFormatada = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
+                cell.innerHTML = `<span class="day-number">${dia}</span>`;
+
+                if (window.dataSelecionadaChave === dataFormatada) {
+                    cell.classList.add('active-day');
+                }
+
+                if (window.atividadesLABIM[dataFormatada] && window.atividadesLABIM[dataFormatada].length > 0) {
+                    cell.classList.add('has-activity');
+                    const dotsContainer = document.createElement('div');
+                    dotsContainer.classList.add('activity-dots');
+
+                    window.atividadesLABIM[dataFormatada].forEach(() => {
+                        const dot = document.createElement('div');
+                        dot.classList.add('dot');
+                        dotsContainer.appendChild(dot);
+                    });
+
+                    cell.appendChild(dotsContainer);
+                }
+
+                cell.onclick = () => selecionarDia(cell, dia, mes, ano, dataFormatada);
+                grid.appendChild(cell);
+            }
+        }
+
+        function selecionarDia(elemento, dia, mes, ano, dataKey) {
+            document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('active-day'));
+            elemento.classList.add('active-day');
+
+            window.dataSelecionadaChave = dataKey;
+
+            const tituloPainel = document.getElementById('selected-date-title');
+            tituloPainel.innerText = `${dia} de ${meses[mes]}`;
+
+            document.getElementById('add-form').style.display = 'flex';
+
+            atualizarListaAtividades(dataKey);
+        }
+
+        function atualizarListaAtividades(dataKey) {
+            const conteudoPainel = document.getElementById('activity-details');
+            const atividades = window.atividadesLABIM[dataKey];
+
+            if (atividades && atividades.length > 0) {
+                let html = '<ul class="activity-list">';
+                atividades.forEach((act, index) => {
+                    html += `
+                        <li class="activity-item">
+                            <button class="btn-delete" title="Excluir" onclick="removerAtividade('${dataKey}', ${index})">
+                                <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:14px; height:14px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                            <div class="activity-title">${act.titulo}</div>
+                            <div class="activity-desc">${act.desc}</div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                conteudoPainel.innerHTML = html;
+            } else {
+                conteudoPainel.innerHTML = '<p class="no-activities">Nenhuma atividade para este dia.</p>';
+            }
+        }
+
+        window.salvarAtividade = function(e) {
+            e.preventDefault();
+            if (!window.dataSelecionadaChave) return;
+
+            const tituloInput = document.getElementById('act-title');
+            const descInput = document.getElementById('act-desc');
+
+            const novaAtividade = {
+                titulo: tituloInput.value,
+                desc: descInput.value
+            };
+
+            if (!window.atividadesLABIM[window.dataSelecionadaChave]) {
+                window.atividadesLABIM[window.dataSelecionadaChave] = [];
+            }
+
+            window.atividadesLABIM[window.dataSelecionadaChave].push(novaAtividade);
+            set(ref(db, 'atividades'), window.atividadesLABIM);
+
+            tituloInput.value = '';
+            descInput.value = '';
+        }
+
+        window.removerAtividade = function(dataKey, index) {
+            window.atividadesLABIM[dataKey].splice(index, 1);
+            if (window.atividadesLABIM[dataKey].length === 0) {
+                delete window.atividadesLABIM[dataKey];
+            }
+            set(ref(db, 'atividades'), window.atividadesLABIM);
+        }
+
+        window.mudarMes = function(delta) {
+            window.dataAtual.setMonth(window.dataAtual.getMonth() + delta);
+            window.dataSelecionadaChave = null;
+            renderizarCalendario();
+            document.getElementById('selected-date-title').innerText = "Selecione um dia";
+            document.getElementById('activity-details').innerHTML = '<p class="no-activities">Clique em um dia no calendário para ver ou adicionar atividades.</p>';
+            document.getElementById('add-form').style.display = 'none';
+        }
+
+        // DOCUMENTOS
+        window.uploadDocumento = function(tipo) {
+            const input = document.getElementById(`upload-${tipo}`);
+            const files = input.files;
+
+            if (files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const novoDoc = {
+                        nome: file.name,
+                        tipo: file.name.endsWith('.pdf') ? 'pdf' : 'docx',
+                        conteudo: e.target.result
+                    };
+                    if (!window.docsData[tipo]) window.docsData[tipo] = [];
+                    window.docsData[tipo].push(novoDoc);
+                    set(ref(db, 'documentos'), window.docsData);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            input.value = '';
+        }
+
+        function renderizarDocumentos(tipo) {
+            const container = document.getElementById(`${tipo}-list`);
+            const lista = window.docsData[tipo];
+
+            if (!lista || lista.length === 0) {
+                container.innerHTML = '<p class="no-docs">Nenhum documento cadastrado nesta seção.</p>';
+                return;
+            }
+
+            let html = '';
+            lista.forEach((doc, index) => {
+                html += `
+                    <div class="doc-card">
+                        <div class="doc-info">
+                            <svg class="svg-stroke" style="stroke:var(--verde-principal); width:20px; height:20px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span class="doc-name" title="${doc.nome}">${doc.nome}</span>
+                        </div>
+                        <div class="doc-actions">
+                            <a href="${doc.conteudo}" download="${doc.nome}" class="doc-btn" title="Baixar">
+                                <svg class="svg-stroke" style="stroke:var(--verde-escuro); width:18px; height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            </a>
+                            <button onclick="removerDocumento('${tipo}', ${index})" class="doc-btn" title="Excluir">
+                                <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:18px; height:18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        window.removerDocumento = function(tipo, index) {
+            window.docsData[tipo].splice(index, 1);
+            set(ref(db, 'documentos'), window.docsData);
+        }
+
+        // MATERIAIS
+        function renderizarMateriais() {
+            const container = document.getElementById('materials-list');
+
+            if (!window.materiaisData || window.materiaisData.length === 0) {
+                container.innerHTML = '<tr><td colspan="3" class="no-docs">Nenhum material cadastrado na lista.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            window.materiaisData.forEach((item, index) => {
+                html += `
+                    <tr>
+                        <td><strong>${item.nome}</strong></td>
+                        <td>${item.qtd} un.</td>
+                        <td style="text-align: center;">
+                            <button onclick="removerMaterial(${index})" class="doc-btn" title="Excluir">
+                                <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:16px; height:16px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        window.adicionarMaterial = function(e) {
+            e.preventDefault();
+            const nomeInput = document.getElementById('mat-nome');
+            const qtdInput = document.getElementById('mat-qtd');
+
+            window.materiaisData.push({
+                nome: nomeInput.value,
+                qtd: parseInt(qtdInput.value, 10)
+            });
+
+            set(ref(db, 'materiais'), window.materiaisData);
+
+            nomeInput.value = '';
+            qtdInput.value = '';
+        }
+
+        window.removerMaterial = function(index) {
+            window.materiaisData.splice(index, 1);
+            set(ref(db, 'materiais'), window.materiaisData);
+        }
+    </script>
+</body>
+</html>
