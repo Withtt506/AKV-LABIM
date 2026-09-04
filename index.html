@@ -259,7 +259,7 @@
             font-weight: bold;
             color: var(--verde-escuro);
             font-size: 0.9rem;
-            padding-right: 20px;
+            padding-right: 25px;
         }
 
         .activity-desc {
@@ -270,16 +270,28 @@
 
         .btn-delete {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            background: none;
-            border: none;
+            top: 6px;
+            right: 6px;
+            background: #fdf2f2;
+            border: 1px solid #f8d7da;
             color: var(--vermelho-alerta);
             font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--vermelho-alerta);
+            color: white;
+            border-color: var(--vermelho-alerta);
         }
 
         .form-add-activity {
@@ -341,6 +353,16 @@
         .doc-section p {
             font-size: 0.9rem;
             color: #555;
+            margin-bottom: 12px;
+        }
+
+        .doc-utility {
+            background-color: var(--verde-suave);
+            border-left: 4px solid var(--verde-principal);
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.88rem;
+            color: var(--verde-escuro);
             margin-bottom: 20px;
         }
 
@@ -413,22 +435,37 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 160px;
+            max-width: 140px;
         }
 
         .doc-actions {
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: 16px;
+            margin-left: 10px;
         }
 
         .doc-btn {
-            background: none;
-            border: none;
+            background: white;
+            border: 1px solid #d1e7dd;
+            border-radius: 6px;
+            padding: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .doc-btn:hover {
+            background-color: var(--verde-suave);
+            border-color: var(--verde-claro);
+        }
+
+        .doc-btn.delete-btn:hover {
+            background-color: #f8d7da;
+            border-color: var(--vermelho-alerta);
         }
 
         .materials-form {
@@ -596,9 +633,13 @@
             <div class="doc-section">
                 <h2>
                     <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    Procedimentos Operacionais Padrão (POP)
+                    Protocolo Operacional Padrão (POP)
                 </h2>
-                <p>Adicione e consulte os documentos operacionais da LABIM (Arquivos suportados: .pdf e .docx).</p>
+                <p>Adicione e consulte os protocolos operacionais da LABIM (Arquivos suportados: .pdf e .docx).</p>
+                
+                <div class="doc-utility">
+                    <strong>Utilidade do POP:</strong> É o guia técnico com foco na padronização, qualidade e reprodutibilidade de um método, não importa quem execute a técnica.
+                </div>
                 
                 <div class="upload-area">
                     <svg class="svg-stroke" style="width: 32px; height: 32px; stroke: var(--verde-principal);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -617,10 +658,14 @@
             <div class="doc-section">
                 <h2>
                     <svg class="svg-stroke"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    Procedimentos Administrativos Padrão (PAP)
+                    Protocolo de Atividades Práticas (PAP)
                 </h2>
-                <p>Adicione e consulte os documentos administrativos da LABIM (Arquivos suportados: .pdf e .docx).</p>
+                <p>Adicione e consulte os protocolos de atividades práticas da LABIM (Arquivos suportados: .pdf e .docx).</p>
                 
+                <div class="doc-utility">
+                    <strong>Utilidade do PAP:</strong> É o guia logístico, com foco na organização do tempo, espaço e pessoas, para garantir que a rotina ou aula prática aconteça sem atrasos, falta de materiais ou conflito de equipamentos.
+                </div>
+
                 <div class="upload-area">
                     <svg class="svg-stroke" style="width: 32px; height: 32px; stroke: var(--verde-principal);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     <p>Arraste ou clique abaixo para anexar novos arquivos PAP</p>
@@ -671,7 +716,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Configuração capturada da sua tela do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCAyPvasTqjqFYwtss_RmbTURWX39S9zYw",
             authDomain: "akv-07.firebaseapp.com",
@@ -685,7 +729,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // VARIÁVEIS GLOBAIS
         window.atividadesLABIM = {};
         window.docsData = { pop: [], pap: [] };
         window.materiaisData = [];
@@ -697,7 +740,6 @@
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
         ];
 
-        // ESCUTADORES EM TEMPO REAL (FIREBASE)
         onValue(ref(db, 'atividades'), (snapshot) => {
             window.atividadesLABIM = snapshot.val() || {};
             renderizarCalendario();
@@ -717,7 +759,6 @@
             renderizarMateriais();
         });
 
-        // NAVEGAÇÃO DE ABAS
         window.abrirAba = function(evt, idAba) {
             let i, tabcontent, tabbuttons;
             tabcontent = document.getElementsByClassName("tab-content");
@@ -732,7 +773,6 @@
             evt.currentTarget.classList.add("active");
         }
 
-        // CALENDÁRIO
         window.renderizarCalendario = function() {
             const ano = window.dataAtual.getFullYear();
             const mes = window.dataAtual.getMonth();
@@ -805,9 +845,7 @@
                 atividades.forEach((act, index) => {
                     html += `
                         <li class="activity-item">
-                            <button class="btn-delete" title="Excluir" onclick="removerAtividade('${dataKey}', ${index})">
-                                <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:14px; height:14px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            </button>
+                            <button class="btn-delete" title="Excluir" onclick="removerAtividade('${dataKey}', ${index})">✕</button>
                             <div class="activity-title">${act.titulo}</div>
                             <div class="activity-desc">${act.desc}</div>
                         </li>
@@ -860,7 +898,6 @@
             document.getElementById('add-form').style.display = 'none';
         }
 
-        // DOCUMENTOS
         window.uploadDocumento = function(tipo) {
             const input = document.getElementById(`upload-${tipo}`);
             const files = input.files;
@@ -903,10 +940,10 @@
                             <span class="doc-name" title="${doc.nome}">${doc.nome}</span>
                         </div>
                         <div class="doc-actions">
-                            <a href="${doc.conteudo}" download="${doc.nome}" class="doc-btn" title="Baixar">
+                            <a href="${doc.conteudo}" download="${doc.nome}" class="doc-btn" title="Baixar Arquivo">
                                 <svg class="svg-stroke" style="stroke:var(--verde-escuro); width:18px; height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             </a>
-                            <button onclick="removerDocumento('${tipo}', ${index})" class="doc-btn" title="Excluir">
+                            <button onclick="removerDocumento('${tipo}', ${index})" class="doc-btn delete-btn" title="Excluir Arquivo">
                                 <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:18px; height:18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </div>
@@ -922,7 +959,6 @@
             set(ref(db, 'documentos'), window.docsData);
         }
 
-        // MATERIAIS
         function renderizarMateriais() {
             const container = document.getElementById('materials-list');
 
@@ -938,7 +974,7 @@
                         <td><strong>${item.nome}</strong></td>
                         <td>${item.qtd} un.</td>
                         <td style="text-align: center;">
-                            <button onclick="removerMaterial(${index})" class="doc-btn" title="Excluir">
+                            <button onclick="removerMaterial(${index})" class="doc-btn delete-btn" title="Excluir">
                                 <svg class="svg-stroke" style="stroke:var(--vermelho-alerta); width:16px; height:16px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </td>
