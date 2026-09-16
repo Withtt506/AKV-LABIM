@@ -14,6 +14,37 @@
             --fundo-pagina: #f4f9f5;
             --texto-escuro: #1c2a23;
             --vermelho-alerta: #e63946;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #ccc;
+            --table-hover: #f4f9f5;
+            --cell-bg: #f8fbf9;
+            --cell-border: #e0efe4;
+            --cell-hover: #d8f3dc;
+            --has-activity-bg: #e8f7ed;
+            --text-muted: #555555;
+        }
+
+        [data-theme="dark"] {
+            --verde-escuro: #52b788;
+            --verde-medio: #40916c;
+            --verde-principal: #2d6a4f;
+            --verde-claro: #1b4332;
+            --verde-suave: #0d1b12;
+            --fundo-pagina: #0b130f;
+            --texto-escuro: #e2e8f0;
+            --vermelho-alerta: #ff6b6b;
+            --container-bg: #132219;
+            --card-bg: #1a2e22;
+            --input-bg: #132219;
+            --input-border: #2d6a4f;
+            --table-hover: #17291e;
+            --cell-bg: #17291e;
+            --cell-border: #243d2c;
+            --cell-hover: #2d6a4f;
+            --has-activity-bg: #1b3826;
+            --text-muted: #a0aec0;
         }
 
         * {
@@ -21,6 +52,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         body {
@@ -36,9 +68,9 @@
         .container {
             width: 100%;
             max-width: 1050px;
-            background: #ffffff;
+            background: var(--container-bg);
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             overflow: hidden;
             border: 1px solid var(--verde-claro);
         }
@@ -48,6 +80,12 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+
+        [data-theme="dark"] header {
+            background-color: #11261a;
+            border-bottom: 1px solid var(--verde-medio);
         }
 
         header h1 {
@@ -60,6 +98,35 @@
         header p {
             color: var(--verde-claro);
             font-size: 0.95rem;
+        }
+
+        .theme-toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            stroke: white;
         }
 
         .nav-tabs {
@@ -87,6 +154,10 @@
             white-space: nowrap;
         }
 
+        [data-theme="dark"] .tab-button {
+            color: var(--verde-escuro);
+        }
+
         .tab-button:hover {
             background-color: rgba(64, 145, 108, 0.15);
         }
@@ -94,6 +165,11 @@
         .tab-button.active {
             background-color: var(--verde-principal);
             color: white;
+        }
+
+        [data-theme="dark"] .tab-button.active {
+            background-color: var(--verde-medio);
+            color: #ffffff;
         }
 
         .tab-button.active svg {
@@ -119,6 +195,12 @@
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
+            }
+            .theme-toggle-btn {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
             }
         }
 
@@ -170,8 +252,8 @@
 
         .day-cell {
             aspect-ratio: 1;
-            background-color: #f8fbf9;
-            border: 1px solid #e0efe4;
+            background-color: var(--cell-bg);
+            border: 1px solid var(--cell-border);
             border-radius: 8px;
             padding: 8px;
             cursor: pointer;
@@ -183,7 +265,7 @@
 
         .day-cell:hover {
             border-color: var(--verde-principal);
-            background-color: var(--verde-suave);
+            background-color: var(--cell-hover);
         }
 
         .day-cell.empty {
@@ -195,11 +277,11 @@
         .day-number {
             font-weight: bold;
             font-size: 0.9rem;
-            color: var(--verde-escuro);
+            color: var(--texto-escuro);
         }
 
         .has-activity {
-            background-color: #e8f7ed;
+            background-color: var(--has-activity-bg);
             border-color: var(--verde-claro);
         }
 
@@ -223,7 +305,7 @@
         }
 
         .details-panel {
-            background-color: var(--fundo-pagina);
+            background-color: var(--card-bg);
             border-radius: 8px;
             padding: 20px;
             border: 1px solid var(--verde-claro);
@@ -246,25 +328,25 @@
         }
 
         .activity-item {
-            background: white;
+            background: var(--input-bg);
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 8px;
             border-left: 4px solid var(--verde-principal);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             position: relative;
         }
 
         .activity-title {
             font-weight: bold;
-            color: var(--verde-escuro);
+            color: var(--texto-escuro);
             font-size: 0.9rem;
             padding-right: 25px;
         }
 
         .activity-desc {
             font-size: 0.8rem;
-            color: #555;
+            color: var(--text-muted);
             margin-top: 2px;
         }
 
@@ -272,8 +354,8 @@
             position: absolute;
             top: 6px;
             right: 6px;
-            background: #fdf2f2;
-            border: 1px solid #f8d7da;
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
             color: var(--vermelho-alerta);
             font-weight: bold;
             font-size: 0.85rem;
@@ -298,7 +380,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            background: white;
+            background: var(--card-bg);
             padding: 12px;
             border-radius: 6px;
             border: 1px solid var(--verde-claro);
@@ -312,7 +394,9 @@
         .form-add-activity input, .form-add-activity textarea {
             width: 100%;
             padding: 6px 8px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--texto-escuro);
             border-radius: 4px;
             font-size: 0.85rem;
         }
@@ -333,7 +417,7 @@
         }
 
         .doc-section {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 8px;
             padding: 20px;
             border: 1px solid var(--verde-claro);
@@ -352,7 +436,7 @@
 
         .doc-section p {
             font-size: 0.9rem;
-            color: #555;
+            color: var(--text-muted);
             margin-bottom: 12px;
         }
 
@@ -362,13 +446,13 @@
             padding: 10px 14px;
             border-radius: 0 6px 6px 0;
             font-size: 0.88rem;
-            color: var(--verde-escuro);
+            color: var(--texto-escuro);
             margin-bottom: 20px;
         }
 
         .upload-area {
             border: 2px dashed var(--verde-claro);
-            background-color: var(--fundo-pagina);
+            background-color: var(--input-bg);
             padding: 25px;
             text-align: center;
             border-radius: 8px;
@@ -412,7 +496,7 @@
         }
 
         .doc-card {
-            background: var(--fundo-pagina);
+            background: var(--input-bg);
             border: 1px solid var(--verde-claro);
             border-radius: 8px;
             padding: 12px 15px;
@@ -431,7 +515,7 @@
         .doc-name {
             font-size: 0.85rem;
             font-weight: bold;
-            color: var(--verde-escuro);
+            color: var(--texto-escuro);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -446,8 +530,8 @@
         }
 
         .doc-btn {
-            background: white;
-            border: 1px solid #d1e7dd;
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
             border-radius: 6px;
             padding: 6px;
             cursor: pointer;
@@ -458,7 +542,6 @@
             transition: all 0.2s ease;
         }
 
-        /* Fundo verde e borda própria para o botão da seta de baixar */
         .doc-btn.download-btn {
             background-color: var(--verde-principal);
             border-color: var(--verde-principal);
@@ -484,7 +567,7 @@
             grid-template-columns: 2fr 1fr auto;
             gap: 10px;
             margin-bottom: 20px;
-            background: var(--fundo-pagina);
+            background: var(--input-bg);
             padding: 15px;
             border-radius: 8px;
             border: 1px solid var(--verde-claro);
@@ -498,7 +581,9 @@
 
         .materials-form input {
             padding: 8px 12px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--input-border);
+            background-color: var(--card-bg);
+            color: var(--texto-escuro);
             border-radius: 5px;
             font-size: 0.9rem;
         }
@@ -530,7 +615,7 @@
         .materials-table th, .materials-table td {
             text-align: left;
             padding: 12px 15px;
-            border-bottom: 1px solid #e0efe4;
+            border-bottom: 1px solid var(--cell-border);
         }
 
         .materials-table th {
@@ -541,14 +626,15 @@
 
         .materials-table td {
             font-size: 0.9rem;
+            color: var(--texto-escuro);
         }
 
         .materials-table tr:hover {
-            background-color: var(--fundo-pagina);
+            background-color: var(--table-hover);
         }
 
         .no-docs {
-            color: #777;
+            color: var(--text-muted);
             font-style: italic;
             font-size: 0.9rem;
         }
@@ -556,13 +642,13 @@
         .svg-icon {
             width: 18px;
             height: 18px;
-            fill: var(--verde-escuro);
+            fill: var(--texto-escuro);
         }
 
         .svg-stroke {
             width: 18px;
             height: 18px;
-            stroke: var(--verde-escuro);
+            stroke: var(--texto-escuro);
             fill: none;
             stroke-width: 2;
             stroke-linecap: round;
@@ -576,6 +662,11 @@
         <header>
             <h1>Painel de Controle e Atividades</h1>
             <p>Diretoria Científica da LABIM</p>
+            <button class="theme-toggle-btn" id="theme-toggle" onclick="alternarModoNoturno()" title="Alternar Modo Noturno">
+                <svg id="theme-icon" class="svg-stroke" style="stroke: white;" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </header>
 
         <nav class="nav-tabs">
@@ -722,7 +813,7 @@
 
     </div>
 
-    <!-- MÓDULOS DO FIREBASE -->
+    <!-- MÓDULOS DO FIREBASE E SCRIPT DO TEMA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -750,6 +841,34 @@
             "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
         ];
+
+        function inicializarTema() {
+            const temaSalvo = localStorage.getItem('labim_tema') || 'light';
+            document.documentElement.setAttribute('data-theme', temaSalvo);
+            atualizarIconeTema(temaSalvo);
+        }
+
+        window.alternarModoNoturno = function() {
+            const temaAtual = document.documentElement.getAttribute('data-theme');
+            const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', novoTema);
+            localStorage.setItem('labim_tema', novoTema);
+            atualizarIconeTema(novoTema);
+        }
+
+        function atualizarIconeTema(tema) {
+            const iconeEl = document.getElementById('theme-icon');
+            if (tema === 'dark') {
+                // Ícone de Sol para voltar ao modo claro
+                iconeEl.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            } else {
+                // Ícone de Lua para modo noturno
+                iconeEl.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+
+        // Executar inicialização do tema
+        inicializarTema();
 
         onValue(ref(db, 'atividades'), (snapshot) => {
             window.atividadesLABIM = snapshot.val() || {};
