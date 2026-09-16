@@ -255,21 +255,38 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2 bg-white dark:bg-labim-card p-6 sm:p-8 rounded-3xl border border-emerald-200 dark:border-emerald-900 shadow-sm relative">
                             <div class="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-orange-500 rounded-full"></div>
-                            <div class="flex items-center justify-between mb-6 pt-2">
+                            
+                            <!-- Header do Calendário & Botão Modo Lista -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pt-2">
                                 <h3 id="month-display" class="text-xl font-bold text-slate-900 dark:text-white capitalize">Setembro 2026</h3>
-                                <div class="flex items-center gap-2">
-                                    <button onclick="mudarMes(-1)" class="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                                    <button id="btn-toggle-view" onclick="alternarModoVisualizacao()" class="px-3.5 py-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition text-xs font-bold flex items-center gap-1.5">
+                                        <svg id="view-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                                        <span id="view-text">Ver em Lista</span>
                                     </button>
-                                    <button onclick="mudarMes(1)" class="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="mudarMes(-1)" class="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                        </button>
+                                        <button onclick="mudarMes(1)" class="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 transition">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-7 gap-2 mb-3 text-center text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">
-                                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+
+                            <!-- Vista em Grade (Padrão) -->
+                            <div id="calendar-grid-view">
+                                <div class="grid grid-cols-7 gap-2 mb-3 text-center text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                                </div>
+                                <div id="calendar-days" class="grid grid-cols-7 gap-2"></div>
                             </div>
-                            <div id="calendar-days" class="grid grid-cols-7 gap-2"></div>
+
+                            <!-- Vista em Modo Lista do Mês (Oculta por padrão) -->
+                            <div id="calendar-list-view" class="hidden space-y-3 max-h-[420px] overflow-y-auto pr-2">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </div>
                         </div>
 
                         <div class="bg-white dark:bg-labim-card p-6 sm:p-8 rounded-3xl border border-emerald-200 dark:border-emerald-900 shadow-sm flex flex-col justify-between relative">
@@ -453,7 +470,7 @@
         </section>
     </main>
 
-    <!-- Custom Modal -->
+    <!-- Custom Modal (Avisos Gerais) -->
     <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
         <div class="bg-white dark:bg-labim-card p-6 sm:p-8 rounded-3xl border border-emerald-200 dark:border-emerald-900 max-w-md w-full mx-4 shadow-2xl text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-1.5 bg-orange-500"></div>
@@ -463,6 +480,22 @@
             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Aviso LABIM</h3>
             <p id="modal-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6"></p>
             <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition border-b-2 border-orange-400">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Confirm Modal (Carismático para Apagar) -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-labim-card p-6 sm:p-8 rounded-3xl border border-emerald-200 dark:border-emerald-900 max-w-md w-full mx-4 shadow-2xl text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-orange-500"></div>
+            <div class="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 mx-auto flex items-center justify-center mb-4 pt-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Opa, vai apagar mesmo? 🧐</h3>
+            <p id="confirm-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6">Se foi só um clique por acidente, relaxa! É só recusar aqui embaixo que fica tudo salvo no painel. ✨</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition border-b-2 border-orange-400">Ufa, cancelar exclusão!</button>
+                <button id="confirm-yes-btn" class="flex-1 py-3 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-sm transition">Sim, apagar</button>
+            </div>
         </div>
     </div>
 
@@ -489,6 +522,7 @@
         window.materiaisData = [];
         window.dataAtual = new Date(2026, 8, 1);
         window.dataSelecionadaChave = null;
+        window.modoVisualizacaoLista = false;
 
         const meses = [
             "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -542,6 +576,24 @@
         }
         window.closeModal = function() {
             document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        window.showConfirmModal = function(itemNome, onConfirm) {
+            document.getElementById('confirm-message').innerHTML = `Tem certeza que deseja remover <strong>"${itemNome}"</strong>?<br><br>Se foi por acidente, relaxa! É só recusar aqui embaixo que fica tudo salvo no painel. ✨`;
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            // Remove antigos event listeners clonando o botão
+            const newBtn = yesBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+            
+            newBtn.onclick = function() {
+                closeConfirmModal();
+                onConfirm();
+            };
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        window.closeConfirmModal = function() {
+            document.getElementById('confirm-modal').classList.add('hidden');
         }
 
         window.mudarAba = function(evt, tabId) {
@@ -629,6 +681,73 @@
                 cell.onclick = () => selecionarDia(cell, dia, mes, ano, dataFormatada);
                 grid.appendChild(cell);
             }
+
+            if (window.modoVisualizacaoLista) {
+                renderizarListaMes(ano, mes, totalDias);
+            }
+        }
+
+        window.alternarModoVisualizacao = function() {
+            window.modoVisualizacaoLista = !window.modoVisualizacaoLista;
+            const gridView = document.getElementById('calendar-grid-view');
+            const listView = document.getElementById('calendar-list-view');
+            const viewText = document.getElementById('view-text');
+            const viewIcon = document.getElementById('view-icon');
+
+            const ano = window.dataAtual.getFullYear();
+            const mes = window.dataAtual.getMonth();
+            const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+            if (window.modoVisualizacaoLista) {
+                gridView.classList.add('hidden');
+                listView.classList.remove('hidden');
+                viewText.innerText = "Ver em Grade";
+                viewIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>';
+                renderizarListaMes(ano, mes, totalDias);
+            } else {
+                listView.classList.add('hidden');
+                gridView.classList.remove('hidden');
+                viewText.innerText = "Ver em Lista";
+                viewIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>';
+            }
+        }
+
+        function renderizarListaMes(ano, mes, totalDias) {
+            const container = document.getElementById('calendar-list-view');
+            let atividadesEncontradas = false;
+            let html = '';
+
+            for (let dia = 1; dia <= totalDias; dia++) {
+                const dataFormatada = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                const atividadesDoDia = window.atividadesLABIM[dataFormatada];
+
+                if (atividadesDoDia && atividadesDoDia.length > 0) {
+                    atividadesEncontradas = true;
+                    html += `
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-labim-dark border border-emerald-200 dark:border-emerald-900">
+                            <h5 class="font-extrabold text-xs text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-2">${dia} de ${meses[mes]} de ${ano}</h5>
+                            <div class="space-y-2">
+                    `;
+                    atividadesDoDia.forEach((act, index) => {
+                        html += `
+                            <div class="p-3 rounded-xl bg-white dark:bg-labim-card border border-slate-200 dark:border-emerald-900/60 flex items-start justify-between gap-3 relative group">
+                                <div>
+                                    <h6 class="font-bold text-sm text-slate-900 dark:text-white">${act.titulo}</h6>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${act.desc || 'Sem descrição'}</p>
+                                </div>
+                                <button onclick="confirmarRemoverAtividade('${dataFormatada}', ${index}, '${act.titulo}')" class="text-rose-500 hover:text-rose-700 font-bold text-xs p-1 shrink-0" title="Excluir atividade">✕</button>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+            }
+
+            if (!atividadesEncontradas) {
+                container.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 italic text-sm">Nenhuma atividade agendada para este mês.</div>';
+            } else {
+                container.innerHTML = html;
+            }
         }
 
         function selecionarDia(elemento, dia, mes, ano, dataKey) {
@@ -653,7 +772,7 @@
                 atividades.forEach((act, index) => {
                     html += `
                         <div class="p-3 rounded-xl bg-slate-50 dark:bg-labim-dark border border-slate-200 dark:border-emerald-900 relative group">
-                            <button onclick="removerAtividade('${dataKey}', ${index})" class="absolute top-2 right-2 text-rose-500 hover:text-rose-700 font-bold text-xs p-1">✕</button>
+                            <button onclick="confirmarRemoverAtividade('${dataKey}', ${index}, '${act.titulo}')" class="absolute top-2 right-2 text-rose-500 hover:text-rose-700 font-bold text-xs p-1">✕</button>
                             <h5 class="font-bold text-sm text-slate-900 dark:text-white pr-6">${act.titulo}</h5>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${act.desc || 'Sem descrição'}</p>
                         </div>
@@ -683,12 +802,14 @@
             document.getElementById('act-desc').value = '';
         }
 
-        window.removerAtividade = function(dataKey, index) {
-            window.atividadesLABIM[dataKey].splice(index, 1);
-            if (window.atividadesLABIM[dataKey].length === 0) {
-                delete window.atividadesLABIM[dataKey];
-            }
-            set(ref(db, 'atividades'), window.atividadesLABIM);
+        window.confirmarRemoverAtividade = function(dataKey, index, titulo) {
+            showConfirmModal(titulo, () => {
+                window.atividadesLABIM[dataKey].splice(index, 1);
+                if (window.atividadesLABIM[dataKey].length === 0) {
+                    delete window.atividadesLABIM[dataKey];
+                }
+                set(ref(db, 'atividades'), window.atividadesLABIM);
+            });
         }
 
         window.mudarMes = function(delta) {
@@ -744,7 +865,7 @@
                             <a href="${doc.conteudo}" download="${doc.nome}" class="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition" title="Baixar Arquivo">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             </a>
-                            <button onclick="removerDocumento('${tipo}', ${index})" class="p-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-600 transition" title="Excluir">
+                            <button onclick="confirmarRemoverDocumento('${tipo}', ${index}, '${doc.nome}')" class="p-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-600 transition" title="Excluir">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
@@ -754,9 +875,11 @@
             container.innerHTML = html;
         }
 
-        window.removerDocumento = function(tipo, index) {
-            window.docsData[tipo].splice(index, 1);
-            set(ref(db, 'documentos'), window.docsData);
+        window.confirmarRemoverDocumento = function(tipo, index, nome) {
+            showConfirmModal(nome, () => {
+                window.docsData[tipo].splice(index, 1);
+                set(ref(db, 'documentos'), window.docsData);
+            });
         }
 
         // Materials Table Management
@@ -775,7 +898,7 @@
                         <td class="py-3 px-4 font-bold text-sm text-slate-900 dark:text-white">${item.nome}</td>
                         <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">${item.qtd} un.</td>
                         <td class="py-3 px-4 text-center">
-                            <button onclick="removerMaterial(${index})" class="p-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-600 transition" title="Excluir Item">
+                            <button onclick="confirmarRemoverMaterial(${index}, '${item.nome}')" class="p-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-600 transition" title="Excluir Item">
                                 <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </td>
@@ -797,9 +920,11 @@
             document.getElementById('mat-qtd').value = '';
         }
 
-        window.removerMaterial = function(index) {
-            window.materiaisData.splice(index, 1);
-            set(ref(db, 'materiais'), window.materiaisData);
+        window.confirmarRemoverMaterial = function(index, nome) {
+            showConfirmModal(nome, () => {
+                window.materiaisData.splice(index, 1);
+                set(ref(db, 'materiais'), window.materiaisData);
+            });
         }
     </script>
 </body>
